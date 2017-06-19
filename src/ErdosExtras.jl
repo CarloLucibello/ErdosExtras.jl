@@ -10,8 +10,7 @@ using Gurobi
 export minimum_weight_perfect_bmatching,
        solve_tsp
 
-LP_SOLVER = GurobiSolver(OutputFlag=0)
-# MIP_SOLVER = GurobiSolver(OutputFlag=0)
+LP_SOLVER = GLPKSolverLP()   #GurobiSolver(OutputFlag=0)
 MIP_SOLVER = GLPKSolverMIP()
 
 
