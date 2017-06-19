@@ -12,7 +12,7 @@ tests = [
 GLIST =    [
             (Graph{Int64}, DiGraph{Int64}),
             (Graph{UInt32}, DiGraph{UInt32}),
-            # (Network, DiNetwork)
+            (Network, DiNetwork)
             ]
 
 for GDG in GLIST

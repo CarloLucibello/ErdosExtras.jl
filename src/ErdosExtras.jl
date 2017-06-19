@@ -10,7 +10,10 @@ using Gurobi
 export minimum_weight_perfect_bmatching,
        solve_tsp
 
-MIP_SOLVER  = GurobiSolver(OutputFlag=0) # [GurobiSolver(), GLPKSolverMIP(), CbcSolver()]
+LP_SOLVER = GurobiSolver(OutputFlag=0)
+# MIP_SOLVER = GurobiSolver(OutputFlag=0)
+MIP_SOLVER = GLPKSolverMIP()
+
 
 include("matching/Matching.jl")
 include("tsp/TSP.jl")

@@ -49,7 +49,7 @@ function _solve_bmatching(g::AGraph, b, w, verb)
     elist = collect(edges(g))
 
     ## Linear Programming
-    # model = Model(solver=ClpSolver()) # ClpSolver(), GurobiSolver()
+    # model = Model(solver=LP_SOLVER)
     # @variable(model, 0 <= x[elist] <= 1)
     # @objective(model, Max, sum(x[e]*w[e] for e in elist))
     # @constraint(model, c1[i=1:nv(g)], sum(x[sort(e)] for e in edges(g, i)) == b)
@@ -64,7 +64,7 @@ function _solve_bmatching(g::AGraph, b, w, verb)
 
     @variable(model, y[elist], Bin)
     @objective(model, Min, sum(y[e]*w[e] for e in elist))
-    @constraint(model, c1[i=1:nv(g)], sum(y[sort(e)] for e in edges(g, i)) == b)
+    @constraint(model, c[i=1:nv(g)], sum(y[sort(e)] for e in edges(g, i)) == b)
 
     # Bootstrap from LP
     # for e in elist
@@ -79,16 +79,18 @@ function _solve_bmatching(g::AGraph, b, w, verb)
 end
 
 function isintegral(sol, verb)
-    f(x) = abs(x - round(Int, x)) > 1e-7
+    TOL = 1e-8
+    f(x) = abs(x - round(Int, x)) > TOL
     n = count(f(sol[e]) for (e,) in keys(sol))
     verb && n > 0 && warn("$n non integer variables out of $(length(sol)) in linear relaxation.")
     return n == 0
 end
 
 function mates(n, b, sol)
+  TOL = 1e-8
   mate = [sizehint!(zeros(Int,0), b) for i=1:n]
   for (e,) in keys(sol)
-    if sol[e] > 1 - 1e-7 # Some tolerance to numerical approximations by the solver.
+    if abs(sol[e] - 1) < TOL
         push!(mate[src(e)], dst(e))
         push!(mate[dst(e)], src(e))
     end

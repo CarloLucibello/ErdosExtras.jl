@@ -48,7 +48,7 @@ function _solve_tsp(g::AGraph, w::AEdgeMap, verb::Bool)
         cb -> begin
             sol = getvalue(y)
             alltours = gettours(g, sol)
-            verb && println("Found $(length(alltours)) tours of lengths ", length.(alltours))
+            verb && println("Found $(length(alltours)) tours of lengths $(length.(alltours)). Adding lazy constraints.")
             for tour in alltours
                 length(tour) == nv(g) && break
                 add_tour_constraint(cb, y, g, tour)
@@ -65,6 +65,7 @@ function _solve_tsp(g::AGraph, w::AEdgeMap, verb::Bool)
 end
 
 function gettours(g, sol)
+    TOL = 1e-8
     alltours = Vector{Vector{Int}}()
     notintour = [1:nv(g);]
     while !isempty(notintour)
@@ -74,7 +75,7 @@ function gettours(g, sol)
         prev = -1
         while u != root || length(tour) == 1
             for e in out_edges(g, u)
-                sol[sort(e)] == 0 && continue
+                abs(sol[sort(e)]) < TOL && continue
                 v = dst(e)
                 v == prev && continue
                 push!(tour, v)
@@ -83,7 +84,9 @@ function gettours(g, sol)
             end
         end
         resize!(tour, length(tour)-1)
+        @assert length(tour) > 2
         notintour = setdiff(notintour, tour)
+        @assert length(notintour) > 2 || length(notintour) == 0 "notintour=$notintour"
         push!(alltours, tour)
     end
     @assert sum(length.(alltours)) == nv(g)
