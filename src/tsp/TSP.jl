@@ -60,7 +60,7 @@ function _solve_tsp(g::AGraph, w::AEdgeMap, verb::Bool)
     cost = getobjectivevalue(model)
 
     alltours = gettours(g, sol)
-    @assert length(alltours) == 1
+    @assert length(alltours) == 1 "Found $(length(alltours)) tours of lengths $(length.(alltours))."
     return status, cost, alltours[1]
 end
 
