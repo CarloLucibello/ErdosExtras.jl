@@ -26,8 +26,7 @@ w = EdgeMap(g, e -> norm(pos[src(e)] - pos[dst(e)]))
 status, W, tour = solve_tsp(g, w)
 ```
 """
-function solve_tsp(g::G,
-        w::AEdgeMap=ConstEdgeMap(g,1); cutoff=Inf, verb=false) where {G<:AGraph}
+function solve_tsp{G<:AGraph}(g::G, w::AEdgeMap; cutoff=Inf, verb=false)
 
     h = G(nv(g))
     for e in edges(g)
