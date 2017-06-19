@@ -7,7 +7,7 @@
         for b =2:4
             status, W, mates = minimum_weight_perfect_bmatching(g, b, w)
             @test status == :Optimal
-            @test  0 < W < n
+            @test  0 < W < b*n/2
             @test length.(mates) == fill(b, n)
             mts = vcat(mates...)
             for i=1:nv(g)
