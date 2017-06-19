@@ -1,5 +1,13 @@
+__precompile__()
 module ErdosExtras
+using Erdos
+using JuMP # Matching
+using GLPKMathProgInterface
 
-# package code goes here
+export minimum_weight_perfect_bmatching,
+       solve_tsp
+
+include("matching/Matching.jl")
+include("tsp/TSP.jl")
 
 end # module
