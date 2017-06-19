@@ -31,8 +31,9 @@ addons:
 #  - if [ $TRAVIS_OS_NAME = osx ]; then brew install gcc; fi
 
 ## uncomment the following lines to override the default test script
-#script:
-#  - julia -e 'Pkg.clone(pwd()); Pkg.build("ErdosExtras"); Pkg.test("ErdosExtras"; coverage=true)'
+script:
+ - julia -e 'Pkg.clone(pwd()); Pkg.build("ErdosExtras"); Pkg.checkout("Erdos"); Pkg.test("ErdosExtras"; coverage=true)'
+
 after_success:
   # push coverage results to Codecov
   - julia -e 'cd(Pkg.dir("ErdosExtras")); Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
