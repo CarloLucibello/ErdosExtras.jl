@@ -26,21 +26,29 @@ w = EdgeMap(g, e -> norm(pos[src(e)] - pos[dst(e)]))
 status, W, tour = solve_tsp(g, w)
 ```
 """
-function solve_tsp(g::AGraph,
-        w::AEdgeMap=ConstEdgeMap(g,1); cutoff=Inf, verb=true)
+function solve_tsp(g::G,
+        w::AEdgeMap=ConstEdgeMap(g,1); cutoff=Inf, verb=false) where {G<:AGraph}
 
-    elist = collect(e for e in edges(g) if (haskey(w, e) && w[e] <= cutoff))
+    h = G(nv(g))
+    for e in edges(g)
+        haskey(w, e) && w[e] <= cutoff && add_edge!(h, e)
+    end
+    return _solve_tsp(h, w, verb)
+end
 
-    model = Model(solver=GLPKSolverMIP()) # CbcSolver(), GurobiSolver()
+function _solve_tsp(g::AGraph, w::AEdgeMap, verb::Bool)
+    elist = collect(edges(g))
+
+    model = Model(solver = MIP_SOLVER)
     @variable(model, y[elist], Bin)
-    @objective(model, Min, sum(y[e]*w[e] for e in elist))
+    @objective(model, Min, sum(y[e]*w[e] for e in edges(g)))
     @constraint(model, c1[i=1:nv(g)], sum(y[sort(e)] for e in edges(g, i)) == 2)
 
     addlazycallback(model,
         cb -> begin
             sol = getvalue(y)
             alltours = gettours(g, sol)
-            verb && println("found tours of length ", length.(alltours))
+            verb && println("Found $(length(alltours)) tours of lengths ", length.(alltours))
             for tour in alltours
                 length(tour) == nv(g) && break
                 add_tour_constraint(cb, y, g, tour)

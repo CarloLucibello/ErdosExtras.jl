@@ -35,10 +35,18 @@ julia> w = EdgeMap(g, e -> rand())
 julia> status, W, match = maximum_weight_perfect_bmatching(g, 2, w)
 ```
 """
-function minimum_weight_perfect_bmatching(g::AGraph, b::Integer,
-        w::AEdgeMap=ConstEdgeMap(g,1); cutoff=Inf, verb=true)
+function minimum_weight_perfect_bmatching(g::G, b::Integer,
+                w::AEdgeMap=ConstEdgeMap(g,1); cutoff=Inf, verb=true) where {G<:AGraph}
+        h = G(nv(g))
+        for e in edges(g)
+            haskey(w, e) && w[e] <= cutoff && add_edge!(h, e)
+        end
 
-    elist = collect(e for e in edges(g) if (haskey(w, e) && w[e] <= cutoff))
+        return _solve_bmatching(h, b, w, verb)
+end
+
+function _solve_bmatching(g::AGraph, b, w, verb)
+    elist = collect(edges(g))
 
     ## Linear Programming
     # model = Model(solver=ClpSolver()) # ClpSolver(), GurobiSolver()
@@ -52,7 +60,7 @@ function minimum_weight_perfect_bmatching(g::AGraph, b::Integer,
     # verb && warn("Using Integer Programming.")
 
     ## Integer Programming
-    model = Model(solver=GLPKSolverMIP()) # CbcSolver(), GurobiSolver()
+    model = Model(solver = MIP_SOLVER)
 
     @variable(model, y[elist], Bin)
     @objective(model, Min, sum(y[e]*w[e] for e in elist))

@@ -12,15 +12,18 @@ tests = [
 GLIST =    [
             (Graph{Int64}, DiGraph{Int64}),
             (Graph{UInt32}, DiGraph{UInt32}),
-            (Network, DiNetwork)
+            # (Network, DiNetwork)
             ]
 
-for GDG in GLIST, t in tests
+for GDG in GLIST
     global G = GDG[1]
     global DG = GDG[2]
-    global TEST = t
     global E = edgetype(G)
     global V = vertextype(G)
-
-    include(joinpath(testdir,"$(t).jl"))
+    # @testset "$G" begin
+    println("@@@@ Testing $G")
+    for t in tests
+        include(joinpath(testdir,"$(t).jl"))
+    end
+    # end
 end
