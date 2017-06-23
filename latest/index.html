@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="More algorithms for Erdos.jl graph library">
+  <meta name="author" content="CarloLucibello">
+  <link rel="shortcut icon" href="./img/favicon.ico">
+  <title>Home - ErdosExtras.jl</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="./css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="./css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="./css/highlight.css">
+  <link href="./assets/Documenter.css" rel="stylesheet">
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Home";
+    var mkdocs_page_input_path = "index.md";
+    var mkdocs_page_url = "/";
+  </script>
+  
+  <script src="./js/jquery-2.1.1.min.js"></script>
+  <script src="./js/modernizr-2.8.3.min.js"></script>
+  <script type="text/javascript" src="./js/highlight.pack.js"></script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href="." class="icon icon-home"> ErdosExtras.jl</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+	<ul class="current">
+	  
+          
+            <li class="toctree-l1 current">
+		
+    <a class="current" href=".">Home</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l2"><a href="#erdosextras">ErdosExtras</a></li>
+    
+
+    </ul>
+	    </li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href=".">ErdosExtras.jl</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Home</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/CarloLucibello/ErdosExtras.jl/edit/master/docs/index.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <p><a id='ErdosExtras-1'></a></p>
+<h1 id="erdosextras">ErdosExtras</h1>
+<p>A companion package for  <a href="https://github.com/CarloLucibello/Erdos.jl">Erdos.jl</a> graph library.</p>
+<p><a id='ErdosExtras.solve_tsp' href='#ErdosExtras.solve_tsp'>#</a>
+<strong><code>ErdosExtras.solve_tsp</code></strong> &mdash; <em>Function</em>.</p>
+<pre><code>solve_tsp(g, w; cutoff=Inf)
+</code></pre>
+
+<p>Given a graph <code>g</code> and an edgemap <code>w</code> containing the weight associated to each edge, solves the Travelling Salesman Problem, returning the tour among all the cities with minimal total weight.</p>
+<p>Edges <code>e</code> with no associated value in <code>w</code> or with <code>w[e] &gt; cutoff</code> will not be considered for the optimal tour.</p>
+<p>The algorithm uses a generic Integer Programming solver combined with a lazy constraint augmentation procedure.</p>
+<p>The package JuMP.jl and one of its supported solvers are required.</p>
+<p>Returns a tuple <code>(status, W, tour)</code> containing:</p>
+<ul>
+<li>a solve <code>status</code> (indicating whether the problem was solved to optimality)</li>
+<li>the tototal weight <code>W</code> of the tour</li>
+<li>a vector <code>tour</code> containing the sequence of vertices in the optimal tour.</li>
+</ul>
+<p><strong>Example</strong></p>
+<pre><code class="julia">pos = rand(30, 2)
+g = CompleteGraph(30)
+w = EdgeMap(g, e -&gt; norm(pos[src(e)] - pos[dst(e)]))
+status, W, tour = solve_tsp(g, w)
+</code></pre>
+
+<p><a target='_blank' href='https://github.com/CarloLucibello/ErdosExtras.jl/tree/80b9e4ab40d89dd99f401aa778c4daa24fbd0c87/src/tsp/TSP.jl#L1-L28' class='documenter-source'>source</a><br></p>
+<p><a id='ErdosExtras.minimum_weight_perfect_bmatching' href='#ErdosExtras.minimum_weight_perfect_bmatching'>#</a>
+<strong><code>ErdosExtras.minimum_weight_perfect_bmatching</code></strong> &mdash; <em>Function</em>.</p>
+<pre><code>minimum_weight_perfect_bmatching(g, b[, w]; cutoff=Inf)
+</code></pre>
+
+<p>Given a graph <code>g</code> and an edgemap <code>w</code> containing the weight associated to each edge, returns the perfect <code>b</code>-matching with the minimum total weight.</p>
+<p>A perfect <code>b</code>-matching <code>M</code> is a collection of edges in <code>g</code> such that every vertex has exactly <code>b</code> incident edges in <code>M</code> .</p>
+<p>If <code>w</code> is not given, all edges will be considered to have weight one (results in max cardinality b-matching).</p>
+<p>Edges <code>e</code> with no associated value in <code>w</code> or with <code>w[e] &gt; cutoff</code> will not be considered for the matching.</p>
+<p>The algorithm uses Linear Programming to solve the linear relaxation of the problem first, then eventually refines the solution with an Integer Programming solver.</p>
+<p>The efficiency of the algorithm depends on the input graph:</p>
+<ul>
+<li>If the graph is bipartite, then the LP relaxation is integral.</li>
+<li>If the graph is not bipartite, then an IP may be required to refine the solution</li>
+</ul>
+<p>and the computation time may grow exponentially.</p>
+<p>The package JuMP.jl and one of its supported solvers are required.</p>
+<p>Returns a tuple <code>(status, W, match)</code> containing:</p>
+<ul>
+<li>a solve <code>status</code> (indicating whether the problem was solved to optimality)</li>
+<li>the tototal weight <code>W</code> of the matching</li>
+<li>a vector <code>match</code> containing each vertex's <code>b</code> neighbors in the optimal matching.</li>
+</ul>
+<p><strong>Example</strong></p>
+<pre><code class="juliarepl">julia&gt; g = CompleteGraph(30)
+julia&gt; w = EdgeMap(g, e -&gt; rand())
+julia&gt; status, W, match = maximum_weight_perfect_bmatching(g, 2, w)
+</code></pre>
+
+<p><a target='_blank' href='https://github.com/CarloLucibello/ErdosExtras.jl/tree/80b9e4ab40d89dd99f401aa778c4daa24fbd0c87/src/matching/b-matching.jl#L1-L37' class='documenter-source'>source</a><br></p>
+              
+            </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+	  
+        </div>
+      </div>
+
+    </section>
+    
+  </div>
+
+  <div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+          <a href="https://github.com/CarloLucibello/ErdosExtras.jl" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
+      
+      
+      
+    </span>
+</div>
+    <script src="./js/theme.js"></script>
+      <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="./assets/mathjaxhelper.js"></script>
+
+</body>
+</html>
+
+<!--
+MkDocs version : 0.16.3
+Build Date UTC : 2017-06-23 09:43:14
+-->
