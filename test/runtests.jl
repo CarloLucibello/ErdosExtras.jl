@@ -6,7 +6,8 @@ testdir = dirname(@__FILE__)
 
 tests = [
     "tsp/TSP",
-    "matching/bmatching"
+    "matching/matching",
+    "matching/bmatching",
     ]
 
 GLIST =    [

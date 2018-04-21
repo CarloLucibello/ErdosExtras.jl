@@ -8,6 +8,7 @@ This package contains
 
 - Travelling Salesman Problem
 - minimum weight perfect b-matching
+- maximum weight matching on arbitrary graphs (through BlossomV algorithm)
 
 ## Installation
 The library `libgmp-dev` to build [GPLK](https://github.com/JuliaOpt/GLPK.jl) on Linux systems is required.

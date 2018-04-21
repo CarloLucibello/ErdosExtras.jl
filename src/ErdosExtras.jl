@@ -3,15 +3,13 @@ module ErdosExtras
 using Erdos
 using JuMP
 using GLPKMathProgInterface
-
-# export set_lp_solver, set_mip_solver, get_lp_solver, get_mip_solver
-
-export minimum_weight_perfect_bmatching
-
-export solve_tsp
+import BlossomV # matching
 
 LP_SOLVER = GLPKSolverLP()   #GurobiSolver(OutputFlag=0)
 MIP_SOLVER = GLPKSolverMIP()
+
+
+# export set_lp_solver, set_mip_solver, get_lp_solver, get_mip_solver
 
 # set_lp_solver(solv) = (LP_SOLVER=solv; solv)
 # set_mip_solver(solv) = (MIP_SOLVER=solv; solv)
@@ -20,6 +18,12 @@ MIP_SOLVER = GLPKSolverMIP()
 # get_mip_solver() = MIP_SOLVER
 
 include("matching/Matching.jl")
+
+export minimum_weight_perfect_bmatching,
+       MatchingResult, minimum_weight_perfect_matching
+
 include("tsp/TSP.jl")
+
+export solve_tsp
 
 end # module
