@@ -32,7 +32,7 @@ Returns a tuple `(status, W, match)` containing:
 ```juliarepl
 julia> g = CompleteGraph(30)
 julia> w = EdgeMap(g, e -> rand())
-julia> status, W, match = maximum_weight_perfect_bmatching(g, 2, w)
+julia> status, W, match = minimum_weight_perfect_bmatching(g, 2, w)
 ```
 """
 function minimum_weight_perfect_bmatching{G<:AGraph}(g::G, b::Integer,
