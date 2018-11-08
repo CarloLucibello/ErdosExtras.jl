@@ -27,7 +27,7 @@ addons:
 
 ## uncomment the following lines to override the default test script
 script:
-  - julia -e 'Pkg.clone(pwd()); Pkg.build("ErdosExtras"); Pkg.checkout("Erdos"); Pkg.test("ErdosExtras"; coverage=true)'
+  - julia -e 'using Pkg; Pkg.clone(pwd()); Pkg.build("ErdosExtras"); Pkg.test("ErdosExtras"; coverage=true)'
 
 after_success:
   - julia -e 'using Pkg; cd(Pkg.dir("ErdosExtras")); Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
