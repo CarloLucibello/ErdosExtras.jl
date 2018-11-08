@@ -35,8 +35,8 @@ julia> w = EdgeMap(g, e -> rand())
 julia> status, W, match = minimum_weight_perfect_bmatching(g, 2, w)
 ```
 """
-function minimum_weight_perfect_bmatching{G<:AGraph}(g::G, b::Integer,
-                w::AEdgeMap=ConstEdgeMap(g,1); cutoff=Inf, verb=true) 
+function minimum_weight_perfect_bmatching(g::G, b::Integer,
+                w::AEdgeMap=ConstEdgeMap(g,1); cutoff=Inf, verb=true) where G<:AGraph 
         h = G(nv(g))
         for e in edges(g)
             haskey(w, e) && w[e] <= cutoff && add_edge!(h, e)

@@ -14,10 +14,10 @@ with weight lower than `cutoff` will be considered for the matching.
 This function relies on the BlossomV.jl package, a julia wrapper
 around Kolmogorov's BlossomV algorithm.
 """
-function minimum_weight_perfect_matching{T<:Real}(
+function minimum_weight_perfect_matching(
         g::AGraph,
         w::AEdgeMap{T},
-        cutoff = typemax(T))
+        cutoff = typemax(T)) where T<:Real
 
     m = BlossomV.Matching(T, nv(g))
     for e in edges(g)
