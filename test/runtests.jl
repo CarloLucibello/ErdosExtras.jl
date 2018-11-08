@@ -1,12 +1,13 @@
 using Erdos
 using ErdosExtras
-using Base.Test
-
-testdir = dirname(@__FILE__)
+using Test
+using LinearAlgebra
+using Random
+using SparseArrays
 
 tests = [
-    "tsp/TSP",
-    "matching/matching",
+    # "tsp/TSP",
+    # "matching/matching",
     "matching/bmatching",
     ]
 
@@ -21,10 +22,8 @@ for GDG in GLIST
     global DG = GDG[2]
     global E = edgetype(G)
     global V = vertextype(G)
-    # @testset "$G" begin
-    println("@@@@ Testing $G")
+    
     for t in tests
-        include(joinpath(testdir,"$(t).jl"))
+        include(joinpath(@__DIR__,"$(t).jl"))
     end
-    # end
 end

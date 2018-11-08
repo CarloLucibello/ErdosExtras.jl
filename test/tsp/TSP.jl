@@ -1,10 +1,10 @@
-@testset "TSP" begin
+@testset "TSP  $G" begin
     @testset "random instances" begin
         n = 10
         g = CompleteGraph(n, G)
         for seed=7:20
             # println("##### Seed $seed #############")
-            srand(seed)
+            Random.seed!(seed)
             w = EdgeMap(g, e->rand())
             status, W, tour = solve_tsp(g, w, verb=false)
             @test status == :Optimal

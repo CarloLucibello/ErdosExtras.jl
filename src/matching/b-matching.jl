@@ -26,7 +26,7 @@ The package JuMP.jl and one of its supported solvers are required.
 Returns a tuple `(status, W, match)` containing:
 - a solve `status` (indicating whether the problem was solved to optimality)
 - the tototal weight `W` of the matching
-- a vector `match` containing each vertex's `b` neighbors in the optimal matching.
+- a vector of vectors `match`, where `match[v]`  contains  the `b` neighbors of `v` in the optimal matching.
 
 **Example**
 ```juliarepl
@@ -75,7 +75,7 @@ function _solve_bmatching(g::AGraph, b, w, verb)
     sol = getvalue(y)
     cost = getobjectivevalue(model)
 
-    return status, cost, mates(nv(g), b, sol)
+    return status, cost, mates(g, b, sol)
 end
 
 function isintegral(sol, verb)
@@ -86,18 +86,20 @@ function isintegral(sol, verb)
     return n == 0
 end
 
-function mates(n, b, sol)
-  TOL = 1e-8
-  mate = [sizehint!(zeros(Int,0), b) for i=1:n]
-  for (e,) in keys(sol)
-    if abs(sol[e] - 1) < TOL
-        push!(mate[src(e)], dst(e))
-        push!(mate[dst(e)], src(e))
+function mates(g, b, sol)
+    TOL = 1e-8
+    n = nv(g)
+    mate = [sizehint!(zeros(Int, 0), b) for i=1:n]
+    for e in edges(g)
+        sol[e] == 0 && continue
+        if abs(sol[e] - 1) < TOL
+            push!(mate[src(e)], dst(e))
+            push!(mate[dst(e)], src(e))
+        end
     end
-  end
-  for v in mate
-      @assert length(v) == b "$v"
-      sort!(v)
-  end
-  return mate
+    for v in mate
+        @assert length(v) == b
+        sort!(v)
+    end
+    return mate
 end
