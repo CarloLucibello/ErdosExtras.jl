@@ -6,8 +6,8 @@ using Random
 using SparseArrays
 
 tests = [
-    # "tsp/TSP",
-    # "matching/matching",
+    "tsp/TSP",
+    "matching/matching",
     "matching/bmatching",
     ]
 

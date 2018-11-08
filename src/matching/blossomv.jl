@@ -6,13 +6,22 @@ to edges, returns a matching with the mimimum total weight among the ones contai
 exactly `nv(g)/2` edges.
 
 Edges in `g` not present in `weights` will not be considered for the matching.
-The returned object is of type `MatchingResult`.
-
 To reduce computational time, a `cutoff` argument can be given. Only edges
 with weight lower than `cutoff` will be considered for the matching.
 
 This function relies on the BlossomV.jl package, a julia wrapper
 around Kolmogorov's BlossomV algorithm.
+
+Returns an object of type `MatchingResult`.
+
+**Example**
+```juliarepl
+g = random_regular_graph(30, 4)
+w = EdgeMap(g, e -> rand())
+match = minimum_weight_perfect_matching(g, w)
+print(match.weight)
+print(match.mate)
+```
 """
 function minimum_weight_perfect_matching(
         g::AGraph,

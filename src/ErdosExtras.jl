@@ -19,8 +19,8 @@ MIP_SOLVER = GLPKSolverMIP()
 
 include("matching/Matching.jl")
 
-export minimum_weight_perfect_bmatching,
-       MatchingResult, minimum_weight_perfect_matching
+export MatchingResult, minimum_weight_perfect_matching,
+       minimum_weight_perfect_bmatching
 
 include("tsp/TSP.jl")
 
