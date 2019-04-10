@@ -34,13 +34,13 @@ after_success:
   - julia -e 'using Pkg; cd(Pkg.dir("ErdosExtras")); Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
   # - julia -e 'using Pkg; Pkg.add("Documenter"); cd(Pkg.dir("ErdosExtras")); include(joinpath("docs", "make.jl"))'
 
-jobs:
-  include:
-    - stage: "Documentation"
-      julia: 1.0
-      os: linux
-      script:
-        - julia --project=docs/ -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd()));
-                                    Pkg.instantiate()'
-        - julia --project=docs/ docs/make.jl
-      after_success: skip
+# jobs:
+#   include:
+#     - stage: "Documentation"
+#       julia: 1.0
+#       os: linux
+#       script:
+#         - julia --project=docs/ -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd()));
+#                                     Pkg.instantiate()'
+#         - julia --project=docs/ docs/make.jl
+#       after_success: skip
