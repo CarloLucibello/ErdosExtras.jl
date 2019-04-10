@@ -1,23 +1,29 @@
 """
-    minimum_weight_perfect_matching{T}(g, weights::AEdgeMap{T}, cutoff=typemax{T})
+    minimum_weight_perfect_matching(g, weights::AEdgeMap{T}; cutoff=typemax{T}) where {T<:Real}
 
 Given a graph `g` and an edgemap `weights` containing non-negative weights associated
 to edges, returns a matching with the mimimum total weight among the ones containing
 exactly `nv(g)/2` edges.
 
 Edges in `g` not present in `weights` will not be considered for the matching.
-The returned object is of type `MatchingResult`.
 
 To reduce computational time, a `cutoff` argument can be given. Only edges
 with weight lower than `cutoff` will be considered for the matching.
 
 This function relies on the BlossomV.jl package, a julia wrapper
 around Kolmogorov's BlossomV algorithm.
+
+The **return value** is a `NamedTuple` object `match` with fields:
+
+    match.weight: total weight of the matching
+
+    match.mate:    `mate[i] = j` if vertex `i` is matched to vertex `j`.
+                   `mate[i] = -1` for unmatched vertices.
 """
-function minimum_weight_perfect_matching{T<:Real}(
+function minimum_weight_perfect_matching(
         g::AGraph,
-        w::AEdgeMap{T},
-        cutoff = typemax(T))
+        w::AEdgeMap{T};
+        cutoff = typemax(T)) where {T<:Real}
 
     m = BlossomV.Matching(T, nv(g))
     for e in edges(g)
@@ -37,5 +43,5 @@ function minimum_weight_perfect_matching{T<:Real}(
             totweight += w[i, j]
         end
     end
-    return MatchingResult(totweight, mate)
+    return (weight=totweight, mate=mate)
 end

@@ -1,13 +1,16 @@
 using Erdos
 using ErdosExtras
-using Base.Test
+using Test
+using SparseArrays: sprand
+using LinearAlgebra: Diagonal
+using Random
 
 testdir = dirname(@__FILE__)
 
 tests = [
     "tsp/TSP",
     "matching/matching",
-    "matching/bmatching",
+    "matching/b-matching",
     ]
 
 GLIST =    [

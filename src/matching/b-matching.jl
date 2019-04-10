@@ -1,7 +1,7 @@
 """
     minimum_weight_perfect_bmatching(g, b[, w]; cutoff=Inf)
 
-Given a graph `g` and an edgemap `w` containing the weight associated to each edge,
+Given a graph `g` and an edgemap `w` containing the weights associated to each edge,
 returns the perfect `b`-matching with the minimum total weight.
 
 A perfect `b`-matching `M` is a collection of edges in `g` such that every vertex
@@ -35,8 +35,8 @@ julia> w = EdgeMap(g, e -> rand())
 julia> status, W, match = minimum_weight_perfect_bmatching(g, 2, w)
 ```
 """
-function minimum_weight_perfect_bmatching{G<:AGraph}(g::G, b::Integer,
-                w::AEdgeMap=ConstEdgeMap(g,1); cutoff=Inf, verb=true) 
+function minimum_weight_perfect_bmatching(g::G, b::Integer,
+                w::AEdgeMap=ConstEdgeMap(g,1); cutoff=Inf, verb=true) where {G<:AGraph}
         h = G(nv(g))
         for e in edges(g)
             haskey(w, e) && w[e] <= cutoff && add_edge!(h, e)
@@ -45,22 +45,23 @@ function minimum_weight_perfect_bmatching{G<:AGraph}(g::G, b::Integer,
         return _solve_bmatching(h, b, w, verb)
 end
 
-function _solve_bmatching(g::AGraph, b, w, verb)
+function _solve_bmatching(g::AGraph, b::Integer, w, verb)
     elist = collect(edges(g))
 
     ## Linear Programming
-    # model = Model(solver=LP_SOLVER)
+    # model = Model(with_optimizer(LP_OPTIMIZER))
     # @variable(model, 0 <= x[elist] <= 1)
-    # @objective(model, Max, sum(x[e]*w[e] for e in elist))
+    # @objective(model, Min, sum(x[e]*w[e] for e in elist))
     # @constraint(model, c1[i=1:nv(g)], sum(x[sort(e)] for e in edges(g, i)) == b)
-    # status = solve(model)
-    # sol = getvalue(x)
-    # cost = getobjectivevalue(model)
+    # optimize!(model)
+    # status = termination_status(model)
+    # sol = value(y)
+    # cost = objective_value(model)
     # isintegral(sol, verb) && return status, cost, mates(nv(g), b, sol)
     # verb && warn("Using Integer Programming.")
 
     ## Integer Programming
-    model = Model(solver = MIP_SOLVER)
+    model = Model(with_optimizer(MIP_OPTIMIZER))
 
     @variable(model, y[elist], Bin)
     @objective(model, Min, sum(y[e]*w[e] for e in elist))
@@ -70,27 +71,24 @@ function _solve_bmatching(g::AGraph, b, w, verb)
     # for e in elist
     #     setvalue(y[e], round(Int, getvalue(x[e])))
     # end
-
-    status = solve(model)
-    sol = getvalue(y)
-    cost = getobjectivevalue(model)
-
+    optimize!(model)
+    status = termination_status(model)
+    sol = Dict(e => value(y[e]) for e in elist)
+    cost = objective_value(model)
     return status, cost, mates(nv(g), b, sol)
 end
 
-function isintegral(sol, verb)
-    TOL = 1e-8
-    f(x) = abs(x - round(Int, x)) > TOL
+function isintegral(sol, verb; atol=1e-8)
+    f(x) = abs(x - round(Int, x)) > atol
     n = count(f(sol[e]) for (e,) in keys(sol))
     verb && n > 0 && warn("$n non integer variables out of $(length(sol)) in linear relaxation.")
     return n == 0
 end
 
-function mates(n, b, sol)
-  TOL = 1e-8
+function mates(n, b::Integer, sol; atol=1e-8)
   mate = [sizehint!(zeros(Int,0), b) for i=1:n]
-  for (e,) in keys(sol)
-    if abs(sol[e] - 1) < TOL
+  for e in keys(sol)
+    if abs(sol[e] - 1) < atol
         push!(mate[src(e)], dst(e))
         push!(mate[dst(e)], src(e))
     end

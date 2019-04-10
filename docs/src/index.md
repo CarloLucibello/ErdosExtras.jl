@@ -4,5 +4,6 @@ A companion package for  [Erdos.jl](https://github.com/CarloLucibello/Erdos.jl) 
 
 ```@docs
 solve_tsp
+minimum_weight_perfect_matching
 minimum_weight_perfect_bmatching
 ```

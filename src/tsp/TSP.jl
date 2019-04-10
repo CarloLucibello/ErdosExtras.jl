@@ -26,8 +26,7 @@ w = EdgeMap(g, e -> norm(pos[src(e)] - pos[dst(e)]))
 status, W, tour = solve_tsp(g, w)
 ```
 """
-function solve_tsp{G<:AGraph}(g::G, w::AEdgeMap; cutoff=Inf, verb=false)
-
+function solve_tsp(g::G, w::AEdgeMap; cutoff=Inf, verb=false) where {G<:AGraph}
     h = G(nv(g))
     for e in edges(g)
         haskey(w, e) && w[e] <= cutoff && add_edge!(h, e)
@@ -37,34 +36,47 @@ end
 
 function _solve_tsp(g::AGraph, w::AEdgeMap, verb::Bool)
     elist = collect(edges(g))
-
-    model = Model(solver = MIP_SOLVER)
+    model = Model(with_optimizer(MIP_OPTIMIZER))
     @variable(model, y[elist], Bin)
     @objective(model, Min, sum(y[e]*w[e] for e in edges(g)))
     @constraint(model, c1[i=1:nv(g)], sum(y[sort(e)] for e in edges(g, i)) == 2)
 
-    addlazycallback(model,
-        cb -> begin
-            sol = getvalue(y)
-            alltours = gettours(g, sol)
-            verb && println("Found $(length(alltours)) tours of lengths $(length.(alltours)). Adding lazy constraints.")
+    ## TODO add lazy callback when avalaible again in JuMP 
+    ## (see https://github.com/JuliaOpt/JuMP.jl/pull/1849)
+    # addlazycallback(model,
+    #     cb -> begin
+    #         sol = getvalue(y)
+    #         alltours = gettours(g, sol)
+    #         verb && println("Found $(length(alltours)) tours of lengths $(length.(alltours)). Adding lazy constraints.")
+    #         for tour in alltours
+    #             length(tour) == nv(g) && break
+    #             add_tour_constraint(cb, y, g, tour)
+    #         end
+    #     end)
+    has_short_tours = true
+    while has_short_tours
+        optimize!(model)
+        sol = Dict(e => value(y[e]) for e in elist)
+        alltours = gettours(g, sol)
+        if length(alltours) == 1 
+            @assert length(alltours[1]) == nv(g)
+            has_short_tours = false
+        else
+            verb && println("@ Found $(length(alltours)) tours.")
             for tour in alltours
-                length(tour) == nv(g) && break
-                add_tour_constraint(cb, y, g, tour)
+                verb && println("@@ Add constraint on tour of length $(length(tour)).")   
+                add_tour_constraint(model, y, g, tour)
             end
-        end)
-
-    status = solve(model)
-    sol = getvalue(y)
-    cost = getobjectivevalue(model)
-
+        end
+    end
+    status = termination_status(model)
+    sol = Dict(e => value(y[e]) for e in elist)
     alltours = gettours(g, sol)
-    @assert length(alltours) == 1 "Found $(length(alltours)) tours of lengths $(length.(alltours))."
+    cost = objective_value(model)
     return status, cost, alltours[1]
 end
 
-function gettours(g, sol)
-    TOL = 1e-8
+function gettours(g, sol; atol=1e-8)
     alltours = Vector{Vector{Int}}()
     notintour = [1:nv(g);]
     while !isempty(notintour)
@@ -74,7 +86,7 @@ function gettours(g, sol)
         prev = -1
         while u != root || length(tour) == 1
             for e in out_edges(g, u)
-                abs(sol[sort(e)]) < TOL && continue
+                abs(sol[sort(e)]) < atol && continue
                 v = dst(e)
                 v == prev && continue
                 push!(tour, v)
@@ -92,7 +104,7 @@ function gettours(g, sol)
     return alltours
 end
 
-function add_tour_constraint(cb, y, g, tour)
+function add_tour_constraint(model, y, g, tour)
     aff = AffExpr()
     for (k, v) in enumerate(tour)
         vprev = k == 1 ? tour[end] : tour[k-1]
@@ -103,5 +115,5 @@ function add_tour_constraint(cb, y, g, tour)
             end
         end
     end
-    @lazyconstraint(cb, aff >= 2)
+    @constraint(model, aff >= 2)
 end

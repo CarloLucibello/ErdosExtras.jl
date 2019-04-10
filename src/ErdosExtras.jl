@@ -2,11 +2,11 @@ __precompile__()
 module ErdosExtras
 using Erdos
 using JuMP
-using GLPKMathProgInterface
+using GLPK
 import BlossomV # matching
 
-LP_SOLVER = GLPKSolverLP()   #GurobiSolver(OutputFlag=0)
-MIP_SOLVER = GLPKSolverMIP()
+LP_OPTIMIZER = GLPK.Optimizer
+MIP_OPTIMIZER = GLPK.Optimizer
 
 
 # export set_lp_solver, set_mip_solver, get_lp_solver, get_mip_solver
@@ -18,12 +18,9 @@ MIP_SOLVER = GLPKSolverMIP()
 # get_mip_solver() = MIP_SOLVER
 
 include("matching/Matching.jl")
-
-export minimum_weight_perfect_bmatching,
-       MatchingResult, minimum_weight_perfect_matching
+export minimum_weight_perfect_bmatching, minimum_weight_perfect_matching
 
 include("tsp/TSP.jl")
-
 export solve_tsp
 
 end # module
