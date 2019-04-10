@@ -14,5 +14,5 @@ This package contains
 The library `libgmp-dev` to build [GPLK](https://github.com/JuliaOpt/GLPK.jl) on Linux systems is required.
 Install *ErdosExtras* with
 ```julia
-julia> Pkg.clone("https://github.com/CarloLucibello/ErdosExtras.jl")
+]add ErdosExtras
 ```

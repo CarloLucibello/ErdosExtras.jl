@@ -26,7 +26,12 @@ w = EdgeMap(g, e -> norm(pos[src(e)] - pos[dst(e)]))
 status, W, tour = solve_tsp(g, w)
 ```
 """
+<<<<<<< HEAD
 function solve_tsp(g::G, w::AEdgeMap; cutoff=Inf, verb=false) where {G<:AGraph}
+=======
+function solve_tsp(g::G, w::AEdgeMap; cutoff=Inf, verb=false) where G<:AGraph
+
+>>>>>>> f9b85b8ac1a522741d69899dcd08c9ca0e4f5adf
     h = G(nv(g))
     for e in edges(g)
         haskey(w, e) && w[e] <= cutoff && add_edge!(h, e)

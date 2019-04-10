@@ -26,7 +26,7 @@ The package JuMP.jl and one of its supported solvers are required.
 Returns a tuple `(status, W, match)` containing:
 - a solve `status` (indicating whether the problem was solved to optimality)
 - the tototal weight `W` of the matching
-- a vector `match` containing each vertex's `b` neighbors in the optimal matching.
+- a vector of vectors `match`, where `match[v]`  contains  the `b` neighbors of `v` in the optimal matching.
 
 **Example**
 ```juliarepl
@@ -36,7 +36,11 @@ julia> status, W, match = minimum_weight_perfect_bmatching(g, 2, w)
 ```
 """
 function minimum_weight_perfect_bmatching(g::G, b::Integer,
+<<<<<<< HEAD
                 w::AEdgeMap=ConstEdgeMap(g,1); cutoff=Inf, verb=true) where {G<:AGraph}
+=======
+                w::AEdgeMap=ConstEdgeMap(g,1); cutoff=Inf, verb=true) where G<:AGraph 
+>>>>>>> f9b85b8ac1a522741d69899dcd08c9ca0e4f5adf
         h = G(nv(g))
         for e in edges(g)
             haskey(w, e) && w[e] <= cutoff && add_edge!(h, e)
@@ -86,16 +90,17 @@ function isintegral(sol, verb; atol=1e-8)
 end
 
 function mates(n, b::Integer, sol; atol=1e-8)
-  mate = [sizehint!(zeros(Int,0), b) for i=1:n]
-  for e in keys(sol)
-    if abs(sol[e] - 1) < atol
-        push!(mate[src(e)], dst(e))
-        push!(mate[dst(e)], src(e))
+    mate = [sizehint!(zeros(Int,0), b) for i=1:n]
+    for e in keys(sol)
+        sol[e] == 0 && continue
+        if abs(sol[e] - 1) < atol
+            push!(mate[src(e)], dst(e))
+            push!(mate[dst(e)], src(e))
+        end
     end
-  end
-  for v in mate
-      @assert length(v) == b "$v"
-      sort!(v)
-  end
-  return mate
+    for v in mate
+        @assert length(v) == b
+        sort!(v)
+    end
+    return mate
 end

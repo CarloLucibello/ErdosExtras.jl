@@ -1,4 +1,4 @@
-@testset "TSP" begin
+@testset "TSP  $G" begin
     @testset "random instances" begin
         n = 10
         g = CompleteGraph(n, G)
@@ -22,4 +22,4 @@
             # @test tour2 ==  tour
         end
     end
-end
+end#end testset

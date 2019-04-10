@@ -6,7 +6,6 @@ to edges, returns a matching with the mimimum total weight among the ones contai
 exactly `nv(g)/2` edges.
 
 Edges in `g` not present in `weights` will not be considered for the matching.
-
 To reduce computational time, a `cutoff` argument can be given. Only edges
 with weight lower than `cutoff` will be considered for the matching.
 
@@ -19,6 +18,15 @@ The **return value** is a `NamedTuple` object `match` with fields:
 
     match.mate:    `mate[i] = j` if vertex `i` is matched to vertex `j`.
                    `mate[i] = -1` for unmatched vertices.
+
+**Example**
+```juliarepl
+g = random_regular_graph(30, 4)
+w = EdgeMap(g, e -> rand())
+match = minimum_weight_perfect_matching(g, w)
+print(match.weight)
+print(match.mate)
+```
 """
 function minimum_weight_perfect_matching(
         g::AGraph,
