@@ -7,14 +7,14 @@
             Random.seed!(seed)
             w = EdgeMap(g, e->rand())
             status, W, tour = solve_tsp(g, w, verb=false)
-            @test status == :Optimal
+            @test Int(status) == 1
             @test 0 < W < n
             @test length(tour) == n
             @test tour[1] == 1
             @test unique(tour) == tour
 
             status, W2, tour2 = solve_tsp(g, w, cutoff = 0.9, verb=false)
-            @test status == :Optimal
+            @test Int(status) == 1
             @test 0 < W2 < n
             @test length(tour2) == n
             @test tour2[1] == 1
@@ -22,4 +22,4 @@
             # @test tour2 ==  tour
         end
     end
-end
+end# testset

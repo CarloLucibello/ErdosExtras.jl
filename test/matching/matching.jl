@@ -55,14 +55,14 @@ w[1,4] = 0.5
 w[2,3] = 11
 w[2,4] = 2
 w[1,2] = 100
-match = minimum_weight_perfect_matching(g, w, 50)
+match = minimum_weight_perfect_matching(g, w, cutoff=50)
 @test match.mate[1] == 4
 @test match.mate[4] == 1
 @test match.mate[2] == 3
 @test match.mate[3] == 2
 @test match.weight == 11.5
 
-w = (s=SparseArrays.sprand(100,100,0.2); s=s+s'; s-Diagonal(s))
+w = (s=sprand(100,100,0.2); s=s+s'; s-Diagonal(s))
 g = Graph(w)
 match = minimum_weight_perfect_matching(g, EdgeMap(g, w))
 for i=1:nv(g)
