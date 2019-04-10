@@ -18,13 +18,7 @@ MIP_OPTIMIZER = GLPK.Optimizer
 # get_mip_solver() = MIP_SOLVER
 
 include("matching/Matching.jl")
-<<<<<<< HEAD
 export minimum_weight_perfect_bmatching, minimum_weight_perfect_matching
-=======
-
-export MatchingResult, minimum_weight_perfect_matching,
-       minimum_weight_perfect_bmatching
->>>>>>> f9b85b8ac1a522741d69899dcd08c9ca0e4f5adf
 
 include("tsp/TSP.jl")
 export solve_tsp

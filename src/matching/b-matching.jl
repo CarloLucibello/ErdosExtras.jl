@@ -36,11 +36,7 @@ julia> status, W, match = minimum_weight_perfect_bmatching(g, 2, w)
 ```
 """
 function minimum_weight_perfect_bmatching(g::G, b::Integer,
-<<<<<<< HEAD
                 w::AEdgeMap=ConstEdgeMap(g,1); cutoff=Inf, verb=true) where {G<:AGraph}
-=======
-                w::AEdgeMap=ConstEdgeMap(g,1); cutoff=Inf, verb=true) where G<:AGraph 
->>>>>>> f9b85b8ac1a522741d69899dcd08c9ca0e4f5adf
         h = G(nv(g))
         for e in edges(g)
             haskey(w, e) && w[e] <= cutoff && add_edge!(h, e)
